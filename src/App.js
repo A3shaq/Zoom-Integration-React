@@ -1,71 +1,35 @@
-import React, { useEffect } from "react";
-import { ZoomMtg } from "@zoomus/websdk";
+import React, { useEffect, useState } from "react";
+
 import "./App.css";
+import ZoomMeeting from "./zoomMeeting";
 
 function App() {
-  ZoomMtg.setZoomJSLib("https://source.zoom.us/1.9.7/lib", "/av");
-  const preLoad = ZoomMtg.preLoadWasm();
-  const prepareSDK = ZoomMtg.prepareJssdk();
-
-  console.log(preLoad, prepareSDK, "preLoad,prepareSDK");
-
-  const obj = {
-    signatureEndpoint: "http://localhost:4000",
-    apiKey: "07jf6fTPR4aICa15-kt4HA",
-    meetingNumber: Math.random() * 6000,
-    role: 0,
-    leaveUrl: "http://localhost:3000/",
-    userName: "Muhammad Arshaq",
-    userEmail: "muhammad.arshaq@koderlabs.com",
-    passWord: "asd123$$A",
-  };
-
+  const [isCreated, setIsCreated] = useState(false);
   useEffect(() => {
-    fetch("http://localhost:4000/api/start_meeting", {
+    const zmmtgElement = (document.getElementById(
+      "zmmtg-root"
+    ).style.visibility = "hidden");
+  }, []);
+  const handleZoomOauht = () => {
+    fetch("http://localhost:4000/api/newmeeting", {
       method: "POST",
-      body: JSON.stringify({ meetingNumber: 123456789656565665, role: 0 }),
+      body: JSON.stringify({ email: "muhammad.arshaq@koderlabs.com" }),
     })
       .then(function (res) {
         return res.json();
       })
-      .then(function (res) {
-        ZoomMtg.init({
-          leaveUrl: obj.leaveUrl,
-          isSupportAV: true,
-          success: (success) => {
-            console.log(success);
-
-            ZoomMtg.join({
-              signature: res.signature,
-              meetingNumber: "123456789",
-              userName: obj.userName,
-              apiKey: obj.apiKey,
-              userEmail: obj.userEmail,
-              passWord: obj.passWord,
-              success: (success) => {
-                ZoomMtg.showRecordFunction({
-                  show: true,
-                });
-                console.log(success);
-              },
-              error: (error) => {
-                console.log(error);
-              },
-            });
-          },
-          error: (error) => {
-            console.log(error);
-          },
-        });
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }, []);
+      .then((data) => console.log(data));
+  };
 
   return (
     <div className="App">
-      <p>ABC</p>
+      <p>Test Zoom SDK Integration</p>
+
+      {!isCreated ? (
+        <button onClick={() => handleZoomOauht()}>Create Meeting</button>
+      ) : (
+        <ZoomMeeting />
+      )}
     </div>
   );
 }
