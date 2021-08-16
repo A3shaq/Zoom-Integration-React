@@ -3,7 +3,6 @@ import { ZoomMtg } from "@zoomus/websdk";
 import "./App.css";
 import axios from "axios";
 const API_KEY = "";
-// const API_SECRET_KEY = "aVqhpAr39g6IrQlevn8ZHSKA9ehXpeTEY6V5";
 
 function ZoomMeeting(props) {
   ZoomMtg.setZoomJSLib("https://source.zoom.us/1.9.7/lib", "/av");
