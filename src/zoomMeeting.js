@@ -1,60 +1,62 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { ZoomMtg } from "@zoomus/websdk";
 import "./App.css";
+import axios from "axios";
+const API_KEY = "";
+// const API_SECRET_KEY = "aVqhpAr39g6IrQlevn8ZHSKA9ehXpeTEY6V5";
 
-function ZoomMeeting() {
-  const [isCreated, setIsCreated] = useState(false);
+function ZoomMeeting(props) {
   ZoomMtg.setZoomJSLib("https://source.zoom.us/1.9.7/lib", "/av");
   const preLoad = ZoomMtg.preLoadWasm();
   const prepareSDK = ZoomMtg.prepareJssdk();
 
   console.log(preLoad, prepareSDK, "preLoad,prepareSDK");
+  console.log(props, "...props");
 
   const obj = {
     signatureEndpoint: "http://localhost:4000",
-    apiKey: "07jf6fTPR4aICa15-kt4HA",
+    apiKey: API_KEY,
     meetingNumber: Math.random() * 6000,
-    role: 0,
+    role: 1,
     leaveUrl: "http://localhost:3000/",
     userName: "Muhammad Arshaq",
-    userEmail: "muhammad.arshaq@koderlabs.com",
-    passWord: "asd123$$A",
+    userEmail: "developers@appverticals.com",
+    passWord: "",
   };
 
   useEffect(() => {
     const zmmtgElement = (document.getElementById(
       "zmmtg-root"
     ).style.visibility = "initial");
-    fetch("http://localhost:4000/api/start_meeting", {
-      method: "POST",
-      body: JSON.stringify({ meetingNumber: 123456789656565665, role: 0 }),
-    })
-      .then(function (res) {
-        return res.json();
+    axios
+      .post("http://localhost:4000/api/start_meeting", {
+        meetingNumber: props?.meetingId?.id,
+        role: 1,
       })
+
+      // .then(function (res) {
+      //    res.json();
+      // })
       .then(function (res) {
+        console.log(res,"res....")
         ZoomMtg.init({
           leaveUrl: obj.leaveUrl,
           isSupportAV: true,
-          success: (success) => {
-            console.log(success);
-
+          success() {
             ZoomMtg.join({
-              signature: res.signature,
-              meetingNumber: "123456789",
+              meetingNumber: props?.meetingId?.id,
               userName: obj.userName,
-              apiKey: obj.apiKey,
               userEmail: obj.userEmail,
-              passWord: obj.passWord,
-              success: (success) => {
+              signature: res?.data?.signature,
+              apiKey: obj.apiKey,
+              passWord:  props?.meetingId?.password,
+              success() {
+                console.log("success")
                 ZoomMtg.showRecordFunction({
                   show: true,
                 });
-                console.log(success);
               },
-              error: (error) => {
-                console.log(error);
-              },
+              error() {},
             });
           },
           error: (error) => {
@@ -67,6 +69,7 @@ function ZoomMeeting() {
       });
   }, []);
 
+  console.log("process.env..",process.env)
   return (
     <div className="ZoomMeeting">
       <button>Join In</button>
